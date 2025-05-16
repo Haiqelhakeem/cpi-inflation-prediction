@@ -45,6 +45,7 @@ Berikut adalah langkah-langkah yang dilakukan saat Data Preparation:
    scaler = MinMaxScaler()
    scaled = scaler.fit_transform(df[['cpi']])
    ```
+   Tahap ini penting karena model seperti LSTM dan GRU sensitif terhadap skala pada data. Sehingga digunakan MinMaxScaler untuk mengubah nilai menjadi rentang 0-1, sehingga model dapat lebih stabil dan menghindari vanishing gradient.
    
 2. Function Sequence: <br> Selanjutnya adalah membuat function create_sequences():
    ```python
@@ -62,7 +63,7 @@ Berikut adalah langkah-langkah yang dilakukan saat Data Preparation:
    SEQ_LEN = 12
    X, y = create_sequences(scaled, SEQ_LEN)
    ```
-   SEQ_LEN adalah variabel yang digunakan untuk menentukan seberapa panjang waktu yang digunakan untuk memprediksi inflasi. Pada kali ini akan menggunakan 12 (bulan). Lalu X dan y untuk menjalankan create_sequences() dengan parameter scaled dan SEQ_LEN.
+   SEQ_LEN adalah variabel yang digunakan untuk menentukan seberapa panjang waktu yang digunakan untuk memprediksi inflasi. Pada kali ini akan menggunakan 12, yang artinya model akan belajar berdasarkan 12 bulan terakhir untuk memprediksi bulan berikutnya. Penentuan SEQ_LEN mencerminkan berapa banyak informasi masa lalu yang dianggap relevan. Lalu X dan y untuk menjalankan create_sequences() dengan parameter scaled dan SEQ_LEN.
 
 4. Data Splitting: <br> Membagi dataset sebanyak 80:20 seperti pada code snippet:
     ```python
@@ -70,5 +71,5 @@ Berikut adalah langkah-langkah yang dilakukan saat Data Preparation:
     X_train, y_train = X[:split], y[:split]
     X_test, y_test = X[split:], y[split:]
     ```
-    Dimana dataset dibagi menjadi 80% train dan 20% test.
+    Dimana dataset dibagi menjadi 80% train dan 20% test. Proses ini membantu mengatasi proses overfitting agar model dapat memprediksi data baru yang tidak ada pada training.
    
