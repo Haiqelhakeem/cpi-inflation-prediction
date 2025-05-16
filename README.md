@@ -45,9 +45,9 @@ Berikut adalah langkah-langkah yang dilakukan saat Data Preparation:
    scaler = MinMaxScaler()
    scaled = scaler.fit_transform(df[['cpi']])
    ```
-   Tahap ini penting karena model seperti LSTM dan GRU sensitif terhadap skala pada data. Sehingga digunakan MinMaxScaler untuk mengubah nilai menjadi rentang 0-1, sehingga model dapat lebih stabil dan menghindari vanishing gradient.
+   Tahap ini penting karena model seperti LSTM dan GRU sensitif terhadap skala pada data. Sehingga digunakan `MinMaxScaler` untuk mengubah nilai menjadi rentang 0-1, sehingga model dapat lebih stabil dan menghindari vanishing gradient.
    
-2. Function Sequence: <br> Selanjutnya adalah membuat function create_sequences():
+2. Function Sequence: <br> Selanjutnya adalah membuat function `create_sequences()`:
    ```python
    def create_sequences(data, seq_len):
     X, y = [], []
@@ -58,12 +58,12 @@ Berikut adalah langkah-langkah yang dilakukan saat Data Preparation:
    ```
    Tujuannya adalah membuat urutan data time series sebagai input (X) dan label/prediksi berikutnya (y) untuk model seperti LSTM dan GRU, yang dirancang untuk memproses data sekuensial.
 
-3. Mendeklarasikan SEQ_LEN dan menjalankan function create_sequences()
+3. Mendeklarasikan `SEQ_LEN` dan menjalankan function `create_sequences()`
    ```python
    SEQ_LEN = 12
    X, y = create_sequences(scaled, SEQ_LEN)
    ```
-   SEQ_LEN adalah variabel yang digunakan untuk menentukan seberapa panjang waktu yang digunakan untuk memprediksi inflasi. Pada kali ini akan menggunakan 12, yang artinya model akan belajar berdasarkan 12 bulan terakhir untuk memprediksi bulan berikutnya. Penentuan SEQ_LEN mencerminkan berapa banyak informasi masa lalu yang dianggap relevan. Lalu X dan y untuk menjalankan create_sequences() dengan parameter scaled dan SEQ_LEN.
+   `SEQ_LEN` adalah variabel yang digunakan untuk menentukan seberapa panjang waktu yang digunakan untuk memprediksi inflasi. Pada kali ini akan menggunakan 12, yang artinya model akan belajar berdasarkan 12 bulan terakhir untuk memprediksi bulan berikutnya. Penentuan `SEQ_LEN` mencerminkan berapa banyak informasi masa lalu yang dianggap relevan. Lalu X dan y untuk menjalankan `create_sequences()` dengan parameter `scaled` dan `SEQ_LEN`.
 
 4. Data Splitting: <br> Membagi dataset sebanyak 80:20 seperti pada code snippet:
     ```python
@@ -72,4 +72,43 @@ Berikut adalah langkah-langkah yang dilakukan saat Data Preparation:
     X_test, y_test = X[split:], y[split:]
     ```
     Dimana dataset dibagi menjadi 80% train dan 20% test. Proses ini membantu mengatasi proses overfitting agar model dapat memprediksi data baru yang tidak ada pada training.
+
+## Modeling
+Pada tahap ini dilakukan modeling seperti:
+1. `Callback`: <br> Callback yang digunakan adalah:
+   ```python
+   callbacks = [
+      ...
+   ]
+   ```
+   - `EarlyStopping`: Untuk menghentikan training lebih awal jika model tidak berkembang dalam beberapa epoch dan mencegah overfitting. Parameter yang digunakan adalah:
+        - `patience = 5` : menunggu epoch 5 jika tanpa peningkatan
+        - `restore_best_weights = True` : mengembalikan bobot terbaik sebelum val_loss memburuk
+        - `monitor = 'val_loss'` : memantau loss pada data validasi
+      ```python
+      EarlyStopping(patience=5, restore_best_weights=True, monitor='val_loss')
+      ```
+   - `ReduceLROnPlateau`: Menurunkan learning rate model jika tidak berkembang. Parameter yang digunakan adalah:
+        - `factor = 0.5` : mengurangi learning rate setengahnya
+        - `patience = 3` : menunggu 3 epoch untuk mengurangi learning rate
+      ```python
+      ReduceLROnPlateau(factor=0.5, patience=3, verbose=1)
+      ```
    
+2. Model LSTM: <br> Membangun model LSTM untuk memprediksi nilai CPI berdasarkan urutan waktu.
+   ```python
+   lstm_model = Sequential([
+       Input(shape=(SEQ_LEN, 1)),
+       LSTM(64, activation='tanh', return_sequences=False),
+       Dense(1)
+   ])
+   lstm_model.compile(optimizer='adam', loss='mse')
+   ```
+   Parameter yang digunakan:
+   - `Input(shape=(SEQ_LEN, 1))` : Input pada model yakni 12 bulan dan 1 fitur per bulan
+   - `LSTM(64, activation='tanh')` :
+        - 64 unit memori untuk menangkap pola sekuensial.
+        - `return_sequences=False` : hanya output terakhir yang diambil.
+   - `Dense(1)` : Output terakhir berupa satu nilai, yakni CPI yang diprediksi
+   - `optimizer='adam'` : Optimisasi Adam yang dinilai adaptif, cepat, dan stabil
+   - `loss - 'mse'` : Mean Squared Error untuk regresi dan time series
