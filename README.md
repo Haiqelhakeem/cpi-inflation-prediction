@@ -28,4 +28,5 @@ Membangun model prediksi inflasi menggunakan model deep learning LSTM dan GRU be
 Dataset yang digunakan merupakan data real yang diambil dari Federal Reserve Bank of St. Louis mengenai index harga dari barang-barang dengan harga yang relatif jarang berubah-ubah (sticky price), contohnya adalah: biaya pendidikan, layanan medis, biaya perumahan, dll. Data ini penting untuk menentukan harga dari produk dan jasa dengan harga yang jarang berubah-ubah untuk mempertimbangkan inflasi di masa depan. Sticky Price CPI sendiri memiliki implikasi penting untuk kebijakan moneter. <br>
 Dataset dapat diunduh dari website [FRED](https://fred.stlouisfed.org/series/CORESTICKM159SFRBATL) <br>  
 ### Variabel atau Fitur pada dataset:
-- 
+- observation_date : Merupakan variabel waktu dilakukannya observasi index consumer price dengan sticky price. Formatnya YYYY-MM-DD. Dimana observasi dilakukan setiap tanggal 1 pada tiap bulannya dimulai dari tahun 1955 sampai 2025. Tipe datanya adalah datetime secara default.
+- CPALTT01USM657N : Pada notebook dilakukan rename menjadi cpi. Yakni merupakan variabel Sticky Price Consumer Index. Nilai yang diambil dikalkulasi berdasarkan subset dari barang-barang dan jasa-jasa yang termasuk ke dalam CPI tetapi dengan harga yang relatif jarang berubah. Tipe datanya adalah float64 secara default.
