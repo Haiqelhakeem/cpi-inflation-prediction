@@ -30,5 +30,45 @@ Dataset dapat diunduh dari website [FRED](https://fred.stlouisfed.org/series/COR
 ### Variabel atau Fitur pada dataset:
 - observation_date : Merupakan variabel waktu dilakukannya observasi index consumer price dengan sticky price. Formatnya YYYY-MM-DD. Dimana observasi dilakukan setiap tanggal 1 pada tiap bulannya dimulai dari tahun 1955 sampai 2025. Tipe datanya adalah datetime secara default.
 - CPALTT01USM657N : Pada notebook dilakukan rename menjadi cpi. Yakni merupakan variabel Sticky Price Consumer Index. Nilai yang diambil dikalkulasi berdasarkan subset dari barang-barang dan jasa-jasa yang termasuk ke dalam CPI tetapi dengan harga yang relatif jarang berubah. Tipe datanya adalah float64 secara default. <br>
-Berikut adalah visualisasi dari dataset dari wakatu ke waktu: <br>
+Berikut adalah visualisasi dari dataset dari wakatu ke waktu: <br>  
 ![Visualisasi Data](/assets/stickyPriceCpi.png)
+
+## Data Preparation
+Berikut adalah langkah-langkah yang dilakukan saat Data Preparation:
+1. Scaling/Normalization: <br> Variabel CPI diskalakan menggunakan:
+   ```python
+   MinMaxScaler()
+   ```
+   seperti pada code snippet berikut:
+   ```python
+   from sklearn.preprocessing import MinMaxScaler
+   scaler = MinMaxScaler()
+   scaled = scaler.fit_transform(df[['cpi']])
+   ```
+   
+2. Function Sequence: <br> Selanjutnya adalah membuat function create_sequences():
+   ```python
+   def create_sequences(data, seq_len):
+    X, y = [], []
+    for i in range(len(data) - seq_len):
+        X.append(data[i:i+seq_len])
+        y.append(data[i+seq_len])
+    return np.array(X), np.array(y)
+   ```
+   Tujuannya adalah membuat urutan data time series sebagai input (X) dan label/prediksi berikutnya (y) untuk model seperti LSTM dan GRU, yang dirancang untuk memproses data sekuensial.
+
+3. Mendeklarasikan SEQ_LEN dan menjalankan function create_sequences()
+   ```python
+   SEQ_LEN = 12
+   X, y = create_sequences(scaled, SEQ_LEN)
+   ```
+   SEQ_LEN adalah variabel yang digunakan untuk menentukan seberapa panjang waktu yang digunakan untuk memprediksi inflasi. Pada kali ini akan menggunakan 12 (bulan). Lalu X dan y untuk menjalankan create_sequences() dengan parameter scaled dan SEQ_LEN.
+
+4. Data Splitting: <br> Membagi dataset sebanyak 80:20 seperti pada code snippet:
+    ```python
+    split = int(0.8 * len(X))
+    X_train, y_train = X[:split], y[:split]
+    X_test, y_test = X[split:], y[split:]
+    ```
+    Dimana dataset dibagi menjadi 80% train dan 20% test.
+   
