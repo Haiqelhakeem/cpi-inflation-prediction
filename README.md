@@ -112,3 +112,44 @@ Pada tahap ini dilakukan modeling seperti:
    - `Dense(1)` : Output terakhir berupa satu nilai, yakni CPI yang diprediksi
    - `optimizer='adam'` : Optimisasi Adam yang dinilai adaptif, cepat, dan stabil
    - `loss - 'mse'` : Mean Squared Error untuk regresi dan time series
+   <br>
+   Kemudian kita melatih model dengan `fit()` : <br>
+
+   ```python
+   lstm_history = lstm_model.fit(
+       X_train, y_train,
+       validation_data=(X_test, y_test),
+       epochs=50,
+       batch_size=32,
+       callbacks=callbacks,
+       verbose=2
+   )
+   ```
+   Parameter yang digunakan: <br>  
+   - `epochs=50`: maksimum 50 pengulangan pelatihan (dihentikan lebih awal jika perlu)
+   - `batch_size=32`: ukuran batch pelatihan
+   - `validation_data=(X_test, y_test)`: untuk evaluasi selama training
+   - `callbacks`: untuk kontrol pelatihan (early stopping dan LR scheduler)
+   <br>
+   Kemudian prediksi dan evaluasi model dengan:
+
+   ```python
+   lstm_preds = lstm_model.predict(X_test)
+   lstm_preds_inv = scaler.inverse_transform(lstm_preds)
+   y_test_inv = scaler.inverse_transform(y_test)
+   
+   mae = mean_absolute_error(y_test_inv, lstm_preds_inv)
+   rmse = np.sqrt(mean_squared_error(y_test_inv, lstm_preds_inv))
+   ```
+   Dimana `inverse_transform()` untuk mengembalikan hasil prediksi ke skala asli dan juga mengukur loss dengan MAE dan RMSE.
+
+4. Model GRU : <br>
+   Sama seperti pada LSTM, yang membedakan adalah model yang digunakan yakni dengan GRU. Sehingga hanya perlu mengganti kata LSTM pada kode sebelumnya dengan GRU. Model GRU (Gated Recurrent Unit) digunakan sebagai alternatif LSTM yang lebih ringan dan cepat.
+   Contohnya : <br>
+   ```python
+   gru_model = Sequential([
+       Input(shape=(SEQ_LEN, 1)),
+       GRU(64, activation='tanh', return_sequences=False),
+       Dense(1)
+   ])
+   ```
