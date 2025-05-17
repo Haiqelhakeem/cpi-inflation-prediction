@@ -153,3 +153,33 @@ Pada tahap ini dilakukan modeling seperti:
        Dense(1)
    ])
    ```
+   
+## Evaluation
+
+Dalam proyek ini, model yang digunakan bertujuan untuk memprediksi nilai inflasi (CPI) berdasarkan data historis time series. Karena tipe permasalahan ini merupakan regresi time series, maka metrik evaluasi yang digunakan adalah **Mean Absolute Error (MAE)** dan **Root Mean Squared Error (RMSE)**. Metrik ini dipilih karena sesuai untuk mengukur kesalahan antara nilai aktual dan nilai prediksi secara langsung dalam satuan yang sama dengan data aslinya.
+
+### Metrik Evaluasi
+
+1. MAE (Mean Absolute Error): <br> Mengukur rata-rata dari selisih absolut antara nilai aktual (`yᵢ`) dan nilai prediksi (`ŷᵢ`). Metrik ini memberikan gambaran seberapa besar rata-rata kesalahan prediksi tanpa memperhitungkan arah kesalahan. Semakin kecil nilai MAE, semakin akurat prediksi model.
+  
+  $$
+  \text{MAE} = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
+  $$
+  
+2. RMSE (Root Mean Squared Error): <br> menghitung akar kuadrat dari rata-rata kuadrat selisih antara nilai aktual dan prediksi. Karena menggunakan kuadrat dari error, RMSE lebih sensitif terhadap outlier dibanding MAE. Cocok untuk menyoroti kesalahan besar dalam prediksi. <br>
+
+  $$
+  \text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2}
+  $$
+
+### Hasil Evaluasi
+
+- LSTM
+  - MAE = 0.2819  
+  - RMSE = 0.3440
+
+- GRU
+  - MAE = 0.2592  
+  - RMSE = 0.3182
+
+Berdasarkan hasil evaluasi di atas, model GRU memiliki performa yang lebih baik dibandingkan LSTM. Hal ini ditunjukkan oleh nilai MAE dan RMSE yang lebih rendah, yang berarti prediksi GRU lebih dekat dengan nilai aktual. Selain itu, GRU cenderung lebih efisien dalam proses pelatihan karena memiliki struktur yang lebih sederhana dibandingkan LSTM, namun tetap mampu menangkap pola temporal pada data CPI dengan baik.
