@@ -12,14 +12,20 @@ Project ini penting karena: <br>
 
 ## Business Understanding
 ### Problem Statements
-1. Bagaiman cara membaca dan mengerti data yang tersedia pada dataset Sticky Price Consumer Price Index (CPI) Less Food and Energy?
-2. Bagaimana cara membangun model deep learning yang akurat menggunakan LSTM dan GRU untuk memprediksi inflasi pada Sticky Price Consumer Price Index (CPI) Less Food and Energy?
-3. Apakah model tersebut cocok untuk kasus prediksi inflasi dan kenapa?
+1. Bagaimana cara memahami pola dan tren historis dari Sticky Price CPI agar dapat digunakan sebagai dasar dalam membangun model prediktif?
+2. Bagaimana cara melakukan preprocessing pada data time series Sticky Price CPI agar dapat dikonversi menjadi format yang sesuai untuk pemodelan menggunakan deep learning?
+3. Bagaimana merancang dan mengembangkan model prediktif berbasis arsitektur LSTM dan GRU untuk memprediksi inflasi dari data Sticky Price CPI?
+4. Bagaimana cara mengevaluasi performa dari model LSTM dan GRU dalam memprediksi CPI berdasarkan metrik evaluasi yang sesuai untuk data time series?
+5. Model manakah yang memiliki performa terbaik berdasarkan hasil evaluasi, dan bagaimana kriteria pemilihannya ditentukan?
+6. Seberapa baik performa model terbaik saat digunakan untuk melakukan prediksi inflasi pada data Sticky Price CPI yang belum pernah dilihat sebelumnya?
 
 ### Goals
-1. Memahami tren dan data pada Sticky Price CPI Less Food and Energy melalui EDA (Exploratory Data Analysis).
-2. Melakukan preprocessing dan konversi data time series ke format input deep learning, membangun dan membandingkan performa model LSTM dan GRU, serta mengevaluasi kinerja model.
-5. Menentukan model terbaik berdasarkan hasil evaluasi.
+1. Memahami trend dari Sticky Price CPI
+2. Preprocess dan mengubah data time series ke dalam deep learning model
+3. Mengembangkan dan membandingkan model LSTM, dan Gru
+4. Evaluasi kinerja model
+5. Menentukan model yang terbaik berdasarkan hasil evaluasi
+6. Test model terbaik untuk prediksi
 
 ### Solution Statement
 Membangun model prediksi inflasi menggunakan model deep learning LSTM dan GRU berdasarkan dataset nyata dari [Federal Reserve Bank of St. Louis](https://fred.stlouisfed.org/series/CORESTICKM159SFRBATL) lalu diproses (scaling, transform, etc.) agar bisa memprediksi dengan akurat untuk beberapa bulan ke depan. Model dengan loss terkecil yang akan dijadikan sebagai model untuk inference (prediksi).
@@ -27,11 +33,23 @@ Membangun model prediksi inflasi menggunakan model deep learning LSTM dan GRU be
 ## Data Understanding
 Dataset yang digunakan merupakan data real yang diambil dari Federal Reserve Bank of St. Louis mengenai index harga dari barang-barang dengan harga yang relatif jarang berubah-ubah (sticky price), contohnya adalah: biaya pendidikan, layanan medis, biaya perumahan, dll. Data ini penting untuk menentukan harga dari produk dan jasa dengan harga yang jarang berubah-ubah untuk mempertimbangkan inflasi di masa depan. Sticky Price CPI sendiri memiliki implikasi penting untuk kebijakan moneter. <br>
 Dataset dapat diunduh dari website [FRED](https://fred.stlouisfed.org/series/CORESTICKM159SFRBATL) <br>  
-### Variabel atau Fitur pada dataset:
+### Struktur Dataset:
+- Jumlah Baris: 830
+- Jumlah Kolom: 2
+- Jumlah Nilai Hilang: 0
+- Jumlah Data Duplikat: 0
+- Jumlah Nilai Unik:
+  - observation_date: 830
+  - cpi: 705
+### Variabel atau Fitur pada Dataset:
 - observation_date : Merupakan variabel waktu dilakukannya observasi index consumer price dengan sticky price. Formatnya YYYY-MM-DD. Dimana observasi dilakukan setiap tanggal 1 pada tiap bulannya dimulai dari tahun 1955 sampai 2025. Tipe datanya adalah datetime secara default.
 - CPALTT01USM657N : Pada notebook dilakukan rename menjadi cpi. Yakni merupakan variabel Sticky Price Consumer Index. Nilai yang diambil dikalkulasi berdasarkan subset dari barang-barang dan jasa-jasa yang termasuk ke dalam CPI tetapi dengan harga yang relatif jarang berubah. Tipe datanya adalah float64 secara default. <br>
 Berikut adalah visualisasi dari dataset dari wakatu ke waktu: <br>  
 ![Visualisasi Data](/assets/stickyPriceCpi.png)
+### Kualitas dan Karakteristik Data
+- Kualitas Data Baik: Tidak terdapat nilai yang hilang maupun duplikat, yang berarti data siap untuk diproses.
+- Distribusi Waktu Konsisten: Semua observasi berada dalam interval waktu bulanan tanpa missing timestamp.
+- Potensi Outlier: Nilai minimum yang jauh lebih rendah dari rata-rata (sekitar -1.915) dapat mengindikasikan anomali atau kondisi ekonomi ekstrim pada periode tertentu. Akan tetapi dalam konteks ini, hal ini dapat menunjukkan index inflasi yang sangat ekstrim sehingga tidak perlu dihilangkan.
 
 ## Data Preparation
 Berikut adalah langkah-langkah yang dilakukan saat Data Preparation:
